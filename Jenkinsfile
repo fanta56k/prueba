@@ -1,18 +1,19 @@
 def numero1 = 10
 def numero2 = 30
 def suma
-def resta
-def multiplicacion
-def division
-def fechaActual = new Date().format('ddMMyyyy')
-def nameFile= "calculos_" + fechaActual
+def nameFile= "calculosejercicionuevo"
 def pathCalculos="/tmp/" + nameFile
     
 pipeline {
     agent any
     
+    options{
+        timeout(time:5,unit:'MINUTES')
+    }
+    
+    
     stages {
-        stage('Ejercicio2 - suma') {
+        stage('stage 1') {
             steps {
                 script{
                     suma = numero1 + numero2
@@ -20,46 +21,31 @@ pipeline {
                 }
             }
         }
-        stage('Ejercicio2 - resta') {
+        stage('stage 2') {
             steps {
                 script{
-                    resta = numero1 - numero2
-                    println resta
+                    sh "truncate -s 0 /tmp/calculosejercicionuevo*"
+                    sh "uptime"
+                    sh "ss -atunp | grep -i listen"
                 }
             }
         }
-        stage('Ejercicio2 - multiplicacion') {
+
+        stage('stage3') {
             steps {
                 script{
-                    multiplicacion = numero1 * numero2
-                    println multiplicacion
-                }
-            }
-        }
-        stage('Ejercicio2 - division') {
-            steps {
-                script{
-                    if (numero1 != 0 || numero2 != 0){
-                        division = numero1 / numero2
-                        println division
-                    }
-                }
-            }
-        }
-        stage('Ejercicio2 - Guardar calculos') {
-            steps {
-                script{
-                    sh "truncate -s 0 /tmp/calculos*"
-                    readContent = readFile pathCalculos
-                    writeFile(file: pathCalculos, text: readContent + suma + "\r\n")
-                    readContent = readFile pathCalculos
-                    writeFile(file: pathCalculos, text: readContent + resta + "\r\n")
-                    readContent = readFile pathCalculos
-                    writeFile(file: pathCalculos, text: readContent + multiplicacion + "\r\n")
-                    readContent = readFile pathCalculos
-                    writeFile(file: pathCalculos, text: readContent + division + "\r\n")
+                    writeFile(file: pathCalculos, text: "Informacion del stage1: Suma 2 numeros y lo imprime por consola")
+                    println "Se ha creado el archivo " + pathCalculos
                 }
             }
         }
     }
+
+    post{
+        always{
+            echo "El pipeline se ejecutó"
+        }
+    }
+    
+    
 }
